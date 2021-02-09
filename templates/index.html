@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<script id='drandom' src="../static/global.js" onload="{this.src += '?' + Math.ceil(Math.random()*100000);}" ></script>
+<link id='krandom' rel="stylesheet" href="../static/templates.css" onload="{this.href += '?' + Math.ceil(Math.random()*100000);}">
+
+<html lang="zh-TW">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />     
+    </head>
+    
+    <body>
+        <div class="selection">
+            <button id = "button0" onclick="toggleShowHide(event)">單點</button>
+            <button id = "button1" onclick="toggleShowHide(event)">套餐</button>
+            <button id = "button2" onclick="toggleShowHide(event)">結帳</button>
+            <!-- <button id = "button2" onclick="toggleShowHide(event)">測試</button>-->
+        </div> 
+        <div>
+            
+        </div>
+        <div id ='selection_group'>
+            <div class="show">
+                <select onchange="selectChange(event)" id = "seletor"></select>
+                <table id="singleTarget">
+                    <thead>
+                        <tr>
+                            <th>品項</th>
+                            <th>價格</th>
+                            <th>加入</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="hide">
+                <table id="setTarget">
+                    <thead>
+                        <tr>
+                            <th>套餐名稱</th>
+                            <th>價格</th>
+                            <th>加入</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="hide">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>品項</th>
+                            <th>價格</th>
+                            <th>總數</th>
+                            <th>刪除</th>
+                            <th>單一增加</th>
+                            <th>單一減少</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Send_list"></tbody>
+                </table>
+                
+                <div>
+                    <input id="custom01" type="text" value="菜名.." onfocus="if (value=='菜名..'){value = ''}" onblur="if (value ==''){value='菜名..'}">
+                    <input id="custom02" type="text" value="價格.." onfocus="if (value=='價格..'){value = ''}" onblur="if (value ==''){value='價格..'}">
+                    <button onclick="addCustomDish(event)">加入</button>
+                </div>
+                <label id="priceLabel" data-price = 0></label>
+                <button onclick="window.myglobal.SendMenu(event)" type="menu">送出</button>
+            </div>
+        </div>
+    </body>
+
+</html>
+
+<script>
+    document.querySelector("#button2").addEventListener("click", cartOnload);
+    document.querySelector("#button2").addEventListener("click", priceChange);
+</script>
