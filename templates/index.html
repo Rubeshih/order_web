@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 
 <!-- onload="{this.href += '?u=' + Math.ceil(Math.random()*100000);}" -->
-<link id = "krandom" rel="stylesheet" href="../static/templates.css" >
-<script id = "drandom" src="../static/global.js"></script>
+<link id = "krandom" rel="stylesheet" href="../static/templates.css" onload="{this.href += '?u=' + Math.ceil(Math.random()*100000);}" >
+<script id = "drandom" src="../static/global.js" onload="{this.src += '?u=' + Math.ceil(Math.random()*100000);}"></script>
 
 <html lang="zh-TW">
 
