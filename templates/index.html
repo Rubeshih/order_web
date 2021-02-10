@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 
-<script id='drandom' src="../static/global.js" onload="{this.src += '?' + Math.ceil(Math.random()*100000);}" ></script>
-<link id='krandom' rel="stylesheet" href="../static/templates.css" onload="{this.href += '?' + Math.ceil(Math.random()*100000);}">
+<!-- onload="{this.href += '?u=' + Math.ceil(Math.random()*100000);}" -->
+<link id = "krandom" rel="stylesheet" href="../static/templates.css" >
+<script id = "drandom" src="../static/global.js"></script>
 
 <html lang="zh-TW">
 
@@ -54,14 +55,16 @@
                             <th>品項</th>
                             <th>價格</th>
                             <th>總數</th>
-                            <th>刪除</th>
                             <th>單一增加</th>
                             <th>單一減少</th>
+                            <th>免費</th>
+                            <th>刪除</th>
                         </tr>
                     </thead>
                     <tbody id="Send_list"></tbody>
                 </table>
-                
+                <select id="tableSelect" onchange="tableSelectChange(event)">
+                </select>
                 <div>
                     <input id="custom01" type="text" value="菜名.." onfocus="if (value=='菜名..'){value = ''}" onblur="if (value ==''){value='菜名..'}">
                     <input id="custom02" type="text" value="價格.." onfocus="if (value=='價格..'){value = ''}" onblur="if (value ==''){value='價格..'}">
@@ -78,4 +81,5 @@
 <script>
     document.querySelector("#button2").addEventListener("click", cartOnload);
     document.querySelector("#button2").addEventListener("click", priceChange);
+    generate_Option();
 </script>

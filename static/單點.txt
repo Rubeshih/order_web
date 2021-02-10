@@ -1,8 +1,105 @@
--*雞肉
-烤雞,650
-椒麻雞,380
--*豬肉
-三杯杏鮑菇,550
--*牛肉
-水煮魚,380
-炸牛肉, 580
+﻿-*豬肉/Pork
+酸菜炒肉 300 img/1.jpg
+大薄片 300 img/2.jpg
+雲南臘肉 380 img/3.jpg
+雲南臘腸 380 img/
+臘肉茭白筍 380 img/
+翡翠酥肉煲 380 img/
+擺夷錦撒 400 img/7.jpg
+臘肉豆腐煲 480 img/8.jpg
+阿婆扣肉 580 img/9.jpg
+雲南雙拼 580 img/
+雲南三拼 680 img/
+-*牛肉/Beef
+牛肉干巴 580 img/10.jpg
+水煮牛肉 580 img/11.jpg
+紅燒牛肉 580 img/
+涼拌牛肉 580 img/
+-*雞/Chicken 
+烤雞 650 img/68.jpg
+椒麻雞 280 img/69.jpg
+雲南小炒 380 img/
+口水雞 480 img/
+臘味拼盤 680 img/
+-*蛋/Egg
+丕菜烘蛋 180 img/14.jpg
+酸筍烘蛋 200 img/
+茴香烘蛋 200 img/16.jpg
+當歸烘蛋 250 img/17.jpg
+蝦仁烘蛋 250 img/18.jpg
+-*豆腐/Tofu
+紅燒豆腐 280 img/19.jpg
+當歸豆腐 300 img/20.jpg
+傣味豆腐 380 img/21.jpg
+鐵板豆腐 380 img/22.jpg
+-*米線/RiceNoodle
+過橋米線 300 img/23.jpg
+傣味米線 300 img/87.jpg
+涼拌米線 300 img/
+涼拌涼粉 400 img/
+-*香菇/Mushroom
+炸鮮菇 280 img/
+鮮炒香菇 280 img/27.jpg
+三杯杏鮑菇 280 img/28.jpg
+保山雞蹤 480 img/29.jpg
+-*蔬菜/Vegetable
+高麗菜 200 img/30.jpg
+龍鬚菜 200 img/31.jpg
+大白菜 200 img/
+青江菜 200 img/33.jpg
+水蓮 250 img/34.jpg
+茭白筍 280 img/
+香辣土豆 280 img/
+涼拌番茄 280 img/
+涼拌花生 280 img/
+-*魚/Fish
+清蒸鱸魚 480 img/39.jpg
+酸筍魚 480 img/
+酸菜魚 480 img/
+包料魚 580 img/41.jpg
+鱒魚 580 img/42.jpg
+鱘龍魚 1880 img/43.jpg
+清蒸 0 img/78.jpg
+三杯 0 img/79.jpg
+鹽酥 0 img/80.jpg
+酸菜 0 img/
+-*蝦/Shrimp
+月亮蝦餅 300 img/44.jpg
+過山蝦 480 img/45.jpg
+鳳梨蝦球 380 img/
+傣味蝦 580 img/
+干鍋蝦 680 img/
+酸筍 0 img/
+糖醋 0 img/
+煮湯 0 img/84.jpg
+-*飯麵/Rice&Noodle
+肉絲炒飯 200 img/49.jpg
+肉絲炒麵 200 img/50.jpg
+牛肉炒飯 200 img/51.jpg
+牛肉炒麵 200 img/52.jpg
+臘味炒飯 250 img/
+傣味炒飯 250 img/
+-*湯/Soup
+時瓜排骨湯 280 img/
+酸筍排骨湯 380 img/
+山當歸雞湯 380 img/
+汽鍋雞湯 680 img/
+牛扒呼湯 880 img/
+-*火鍋/Hotpot
+一般鍋 380 img/60.jpg
+牛奶鍋 380 img/61.jpg
+麻辣鍋(大) 1200 img/
+麻辣鍋(小) 680 img/
+砂鍋魚頭 1200 img/
+鍋瓢牛肉 1500 img/
+騰沖鍋 1800 img/
+配料(牛) 0 img/76.jpg
+配料(豬) 0 img/
+例湯 200 img/67.jpg
+-*特色/Speacial
+香酥竹蟲 480 img/
+雲南乳扇 580 img/
+拉枯手抓飯 680 img/75.jpg
+-*雜項/misc
+白飯 10 img/
+附飯 0 img/

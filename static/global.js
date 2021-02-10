@@ -1,17 +1,18 @@
 class dish{
-    constructor(name, price, count){
+    constructor(name, price, count, imgPath){
         this.NAME = name
         this.PRICE = price
         this.COUNT = count
-        this.ATTRS = {'isModified':false, 'isFree':false};
+        this.ATTRS = {'isModified':false, 'imgPath': imgPath,/*'isFree':false*/};
     }
 };
 
 let cart = {}
+let templateCopySingles = []
 
 window.myglobal = { //這種寫法也行
 
-    urlHome: "http://192.168.144.9:9595/index",
+    urlHome: "http://127.0.0.1:9191/index",
     
     SendMenu:
         function(e){
@@ -36,11 +37,13 @@ window.myglobal = { //這種寫法也行
                     if(request.status == 200)
                     {
                         alert("已送出");
+                        console.log(cart);
                         cart = {};
                         document.querySelector("#Send_list").innerHTML = '';
                         document.querySelector("#priceLabel").innerText = "總價 0";
                         document.querySelector("#custom01").value="菜名..";
                         document.querySelector("#custom02").value="價格..";
+                        document.querySelector("#tableSelect").selectedIndex = 0;
                     }
                     else{
                         alert("失敗");
@@ -48,7 +51,9 @@ window.myglobal = { //這種寫法也行
                 }
             }
             
-            cart['total'] = parseInt(document.querySelector("#priceLabel").dataset.price);
+            cart['TableNumber'] = parseInt(document.querySelector("#tableSelect").selectedIndex) + 1
+            
+            //cart['total'] = parseInt(document.querySelector("#priceLabel").dataset.price);
             request.send(JSON.stringify(cart), timeout=1.0);
             
     }, 
@@ -89,13 +94,15 @@ addCustomDish = function(e){
 
 addToCart = function(e){
 
-    let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype)
-
+    let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype);
+    
     if(cart[json["NAME"]] == null)
         cart[json["NAME"]] = json;
     else{
         cart[json["NAME"]]['COUNT'] = parseInt(cart[json[["NAME"]]]['COUNT']) + 1;
     }
+
+    //console.log(cart);
 }
 
 SetaddToCart = function(e){
@@ -118,7 +125,7 @@ explicitAddSingle = function(){
     
     let req = new XMLHttpRequest()
     
-    req.open("GET", "/localFile/single", true);
+    req.open("GET", "/localFile/single", true); // AYSNC
     req.onreadystatechange = function(){
 
         const selector = document.querySelector("#seletor");
@@ -144,7 +151,6 @@ explicitAddSingle = function(){
                         option.innerText = catgoryName;
                         selector.appendChild(option); 
 
-                        
                         tbody = document.createElement("tbody");
                         tbody.className = "selector_hide";
                         tbody.id = "tbody" + cateCount;
@@ -157,9 +163,10 @@ explicitAddSingle = function(){
                     }
                     else
                     {
-                        line = line.split('\,');
+                        line = line.split('\ ');
                         
-                        let _dish = new dish(line[0], parseInt(line[1]), 1);
+                        let _dish = new dish(line[0], parseInt(line[1]), 1, line[2]);
+                        templateCopySingles.push(_dish);
                         let tr = document.createElement("tr");
                         tr.setAttribute("data-jsontype", JSON.stringify(_dish));
 
@@ -183,8 +190,7 @@ explicitAddSingle = function(){
                         document.querySelector("#singleTarget").appendChild(tbody); 
                     }
                 }
-
-                
+                explicitAddSet();
             }
         }
     }
@@ -211,14 +217,17 @@ explicitAddSet = function () {
                     if(line.length == 0) continue;
 
                     if(line.substring(0,2) == "-*"){
-
+                    
                         if(!once){
                             once = true;
                         }
                         else{
                             tbody.setAttribute("data-jsontype", JSON.stringify(list));
-                            list = [];
+                            list = []
                         }
+
+                        line = line.substring(2).split('\ ');
+                        list.push(new dish(line[0], parseInt(line[1]), 1))
 
                         tbody = document.createElement("tbody");
                         let td0 = document.createElement("td");
@@ -226,7 +235,6 @@ explicitAddSet = function () {
                         let td2 = document.createElement("td");
                         let btn = document.createElement("button");
                         
-                        line = line.substring(2).split('\,');
                         td0.innerText = line[0];
                         td1.innerText = line[1];
                         td2.appendChild(btn);
@@ -240,16 +248,27 @@ explicitAddSet = function () {
                         document.querySelector("#setTarget").appendChild(tbody);
                     }
                     else{
-                        line = Text[i].split('\,');
-                        list.push(new dish(line[0], parseInt(line[1]), 1));
+                        let imgPath;
+
+                        for(j = 0 ; j < templateCopySingles.length; j++) //找imgPath
+                        {
+                            if(templateCopySingles[j].NAME == line){
+                                imgPath = templateCopySingles[j].ATTRS.imgPath;
+                                break;
+                            }
+                        }
+
+                        list.push(new dish(line, 0, 1, imgPath));
                     }
                 }
-                //少一次 要在放進去
+                //少一次 要再放進去
                 tbody.setAttribute("data-jsontype", JSON.stringify(list));
                 list = [];
+                templateCopySingles = null;
             }
         }
     }
+
     req.send(null);
 }
 
@@ -257,32 +276,23 @@ cartOnload = function(e){
     
     const outerkeys = Object.keys(cart); //Get Json Keys
     document.querySelector("#Send_list").innerHTML = ''
-    
+
     //Maybe can smarter
     for(i = 0; i < outerkeys.length; i++){
         subtree = document.createElement("tr");
         const innerJson = cart[outerkeys[i]];
-        const innerKeys = Object.keys(innerJson);
-        subtree.setAttribute("data-jsontype", JSON.stringify(innerJson))
-        for(j = 0; j < innerKeys.length-1; j++ ){
-            subtree.appendChild(document.createElement("td"));
-            subtree.children[j].appendChild(document.createTextNode(innerJson[innerKeys[j]]));
-        }
+        subtree.setAttribute("data-jsontype", JSON.stringify(innerJson));
         
-        subtree.appendChild(document.createElement("td"));
-        let remove_btn = document.createElement("button");
-        remove_btn.innerText = "X"
-        remove_btn.addEventListener("click",
-            function(e) {
-                let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype);
-                let tbody = e.target.parentElement.parentElement.parentElement;
-                tbody.removeChild(e.target.parentElement.parentElement)
-                delete cart[json.NAME]
-                priceChange(null);
-        });
-        subtree.children[3].appendChild(remove_btn);
+        subtree.appendChild(document.createElement("td")); //品項
+        subtree.childNodes[0].innerText = innerJson.NAME;
+        
+        subtree.appendChild(document.createElement("td")); //價格
+        subtree.childNodes[1].innerText = innerJson.PRICE;
 
-        subtree.appendChild(document.createElement("td"));
+        subtree.appendChild(document.createElement("td")); //總數
+        subtree.childNodes[2].innerText = innerJson.COUNT;
+
+        subtree.appendChild(document.createElement("td")); //單一增加
         let increment = document.createElement("button");
         increment.innerText = "↑"
         increment.addEventListener("click",
@@ -294,14 +304,15 @@ cartOnload = function(e){
 
                 target.childNodes[2].innerText = json.COUNT;
                 target.dataset.jsontype = JSON.stringify(json);
+                cart[json.NAME] = json;
 
                 let labe = document.querySelector("#priceLabel")
                 labe.dataset.price = parseInt(labe.dataset.price) + json.PRICE;
                 labe.innerText = "總價 " + labe.dataset.price;
         });
-        subtree.children[4].appendChild(increment);
+        subtree.children[3].appendChild(increment);
 
-        subtree.appendChild(document.createElement("td"));
+        subtree.appendChild(document.createElement("td")); //單一減少
         let decrement = document.createElement("button");
         decrement.innerText = "↓"
         decrement.addEventListener("click",
@@ -319,6 +330,7 @@ cartOnload = function(e){
                 else{
                     target.childNodes[2].innerText = json.COUNT;
                     target.dataset.jsontype = JSON.stringify(json);
+                    cart[json.NAME] = json;
                 }
                 
                 let labe = document.querySelector("#priceLabel")
@@ -326,14 +338,49 @@ cartOnload = function(e){
                 labe.innerText = "總價 " + labe.dataset.price;
                 
         });
-        subtree.children[5].appendChild(decrement);
+        subtree.children[4].appendChild(decrement);
+
+        subtree.appendChild(document.createElement("td")); //免費
+        let free = document.createElement("button");
+        free.innerText = "Free"
+        free.addEventListener("click",
+            function(e) {
+                let target = e.target.parentElement.parentElement;
+
+                let json = JSON.parse(target.dataset.jsontype);
+                
+                let labe = document.querySelector("#priceLabel")
+                labe.dataset.price = parseInt(labe.dataset.price) - (json.PRICE * json.COUNT);
+                labe.innerText = "總價 " + labe.dataset.price;
+                
+                json.PRICE = 0;
+                target.children[1].innerText = 0;
+                target.dataset.jsontype = JSON.stringify(json);
+                json.ATTRS.isModified = true;
+                cart[json.NAME] = json;
+        });
+        subtree.children[5].appendChild(free);
+
+        subtree.appendChild(document.createElement("td")); //刪除
+        let remove = document.createElement("button");
+        remove.innerText = "X"
+        remove.addEventListener("click",
+            function(e) {
+                let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype);
+                let tbody = e.target.parentElement.parentElement.parentElement;
+                tbody.removeChild(e.target.parentElement.parentElement)
+                delete cart[json.NAME]
+                priceChange(null);
+        });
+        subtree.children[6].appendChild(remove);
 
         document.querySelector("#Send_list").appendChild(subtree);
-        priceChange(null);
     }
+    priceChange(null);
 }
 
 priceChange = function(e){
+    
     let price = 0;
     let sendlist = document.querySelector("#Send_list").childNodes;
 
@@ -347,16 +394,46 @@ priceChange = function(e){
     labe.dataset.price = price;
 }
 
+const TABLE_NUMBER = 17
+generate_Option = function(){
+
+    let ies = document.querySelector("#tableSelect");
+    let option;
+
+    for(i = 1; i <= TABLE_NUMBER; i++)
+    {
+        option = document.createElement("option");
+        option.innerText = i;
+        ies.appendChild(option);
+    }
+
+    option = document.createElement("option");
+    option.innerText = "外帶"
+    ies.append(option);
+
+    option = document.createElement("option");
+    option.innerText = "外送"
+    ies.append(option);
+
+    option = document.createElement("option");
+    option.innerText = "訂桌"
+    ies.append(option);
+
+    ies.selectedIndex = 0;
+}
+
+tableSelectChange = function(e){
+    console.log(e.target.selectedIndex);
+}
+
 selectChange = function(e){
 
     let sel = e.target;
     for(i = 0; i < sel.childNodes.length; i++){
-        document.querySelector("#tbody" + i).className = "selector_hide";
-        
+        document.querySelector("#tbody" + i).className = "selector_hide";   
     }
-
     document.querySelector("#tbody" + e.target.selectedIndex).className = "selector_show";
 }
 
 explicitAddSingle();
-explicitAddSet();
+//explicitAddSet();
