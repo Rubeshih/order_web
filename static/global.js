@@ -20,8 +20,8 @@ let msgPacket = new MessagePacket();
 window.myglobal = { //這種寫法也行
 
     //無法送出試著改這裡
-    urlHome: "http://192.168.1.39:8080/index", 
-    urlChangeMenu: "http://192.168.1.39:8080/changeMenu",
+    urlHome: "http://127.0.0.1:8080/index", 
+    urlChangeMenu: "http://127.0.0.1:8080/changeMenu",
     
     SendMenu:
         function(e){
@@ -54,6 +54,7 @@ window.myglobal = { //這種寫法也行
                         document.querySelector("#custom01").value="菜名..";
                         document.querySelector("#custom02").value="價格..";
                         document.querySelector("#tableSelect").selectedIndex = 0;
+                        document.querySelector("#countItem").innerText = "";
                     }
                     else{
                         alert("失敗");
@@ -79,6 +80,7 @@ window.myglobal = { //這種寫法也行
                     let jsonStatus = JSON.parse(pcStatus);
 
                     msgPacket = jsonStatus;
+                    document.querySelector("#tableSelect").selectedIndex = msgPacket.TableNumber-1;
 
                     cartOnload();
                 }
@@ -132,8 +134,6 @@ SetaddToCart = function(e){
     let arr = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype); //Here is array
     
     for(i = 0; i < arr.length; i++){
-
-        let json = arr[i];
 
         appendToMeals(arr[i]);
     }
@@ -335,6 +335,7 @@ explicitAddSet = function () {
 
 cartOnload = function(e){
     
+    sumCountItem();
     //const outerkeys = Object.keys(cart); //Get Json Keys
     document.querySelector("#Send_list").innerHTML = ''
 
@@ -391,8 +392,12 @@ cartOnload = function(e){
 
                 if(json.COUNT <= 0){
                     tbody.removeChild(target);
-                    msgPacket.Meals.pop(findMealInMeals(json));
+                    let index = msgPacket.Meals.indexOf(findMealInMeals(json));
+                    msgPacket.Meals.splice(index, 1);
+                    console.log(msgPacket.Meals);
+                    sumCountItem();
                     //delete cart[json.NAME];
+                
                 }
                 else{
                     target.childNodes[2].innerText = json.COUNT;
@@ -438,8 +443,10 @@ cartOnload = function(e){
                 let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype);
                 let tbody = e.target.parentElement.parentElement.parentElement;
                 tbody.removeChild(e.target.parentElement.parentElement)
-                msgPacket.Meals.pop(findMealInMeals(json));
-                //delete cart[json.NAME]
+                let index = msgPacket.Meals.indexOf(findMealInMeals(json));
+                msgPacket.Meals.splice(index, 1);
+                sumCountItem();
+                console.log(msgPacket.Meals);
                 priceChange(null);
         });
         subtree.children[6].appendChild(remove);
@@ -464,7 +471,7 @@ priceChange = function(e){
     labe.dataset.price = price;
 }
 
-const TABLE_NUMBER = 17
+const TABLE_NUMBER = 17;
 generate_Option = function(){
 
     let ies = document.querySelector("#tableSelect");
@@ -504,6 +511,10 @@ selectChange = function(e){
         document.querySelector("#tbody" + i).className = "selector_hide";   
     }
     document.querySelector("#tbody" + e.target.selectedIndex).className = "selector_show";
+}
+
+sumCountItem = function(){
+    document.querySelector("#countItem").innerHTML = msgPacket.Meals.length + " 道菜";
 }
 
 explicitAddSingle();
