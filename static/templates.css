@@ -1,9 +1,74 @@
 /* 整體 */
 body {
-    margin: auto;
-    max-width: 580px;
-    font-size: 14px;
-    font-family: Helvetica, Arial, sans-serif;
+    background-color: lightgreen;
+  }
+  
+  @media only screen and (max-width: 600px) {
+    body {
+      background-color: lightblue;
+      font-size: 16px;
+    }
+}
+
+.tdLabel {
+
+    background-color: #75d178;
+    border-radius: 9px;
+}
+
+._3col th{
+    width: 100%;
+    border: 1px solid black;
+    background-color : #4CAF50;
+    
+}
+
+._3col td{
+    text-align: center;
+    font-size:18px;
+    border: 1px solid black;
+}
+
+._7col th{
+    width: 100%;
+    border: 1px solid black;
+}
+
+._7col td{
+    width: 100%;;
+    font-size: 18px;
+    border: 1px solid black;
+}
+/*table, th, td {
+    width: 100%;
+    border: 1px solid black;
+    text-align: center;
+    
+    font-size: 14;
+}*/
+
+/*#singleTarget tr:hover {background-color: #ddd;}
+*/
+
+button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 16px;
+    box-shadow: 0 2px #999;
+    transition:0s 50ms;
+}
+
+button:active{
+    background-color: #8ddb8f;
+    box-shadow: 0 1px #666;
+    transform: translateY(2px);
+    transition:0s;
 }
 
 /* 頁腳 */
@@ -14,6 +79,14 @@ footer {
     padding: 10px;
 }
 
+.selector_hide{
+    display: none;
+}
+
+.selector_show{
+    text-align: center;
+}
+
 .hide {
     display: none;
 }
@@ -22,10 +95,11 @@ footer {
     display: block;
 }
 
-.selector_hide{
-    display: none;
+select{
+    font-size:20px
 }
 
-.selector_show{
-    display: block;
+#custom01, #custom02 {
+    width: 140px;
+    font-size: 20px;
 }

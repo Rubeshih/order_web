@@ -1,4 +1,11 @@
-class dish{
+class MessagePacket{
+    constructor(){
+        this.TableNumber = 1;
+        this.Meals = [];
+    }
+}
+
+class Meal{
     constructor(name, price, count, imgPath){
         this.NAME = name
         this.PRICE = price
@@ -7,17 +14,19 @@ class dish{
     }
 };
 
-let cart = {}
-let templateCopySingles = []
+let templateCopySingles = [];
+let msgPacket = new MessagePacket();
 
 window.myglobal = { //這種寫法也行
 
-    urlHome: "http://127.0.0.1:9191/index",
+    //無法送出試著改這裡
+    urlHome: "http://192.168.1.39:8080/index", 
+    urlChangeMenu: "http://192.168.1.39:8080/changeMenu",
     
     SendMenu:
         function(e){
 
-            if(Object.keys(cart).length == 0){ 
+            if(msgPacket.Meals.length == 0){ 
                 console.log("Err:[There's no item in cart]");
                 return;
             }
@@ -37,8 +46,9 @@ window.myglobal = { //這種寫法也行
                     if(request.status == 200)
                     {
                         alert("已送出");
-                        console.log(cart);
-                        cart = {};
+                        console.log(msgPacket);
+                        msgPacket.TableNumber = 1; //重置封包
+                        msgPacket.Meals = [];
                         document.querySelector("#Send_list").innerHTML = '';
                         document.querySelector("#priceLabel").innerText = "總價 0";
                         document.querySelector("#custom01").value="菜名..";
@@ -51,12 +61,35 @@ window.myglobal = { //這種寫法也行
                 }
             }
             
-            cart['TableNumber'] = parseInt(document.querySelector("#tableSelect").selectedIndex) + 1
-            
-            //cart['total'] = parseInt(document.querySelector("#priceLabel").dataset.price);
-            request.send(JSON.stringify(cart), timeout=1.0);
-            
+            request.send(JSON.stringify(msgPacket), timeout=1.0);            
     }, 
+
+    changeMenuRequest : function(){
+        
+        let request = new XMLHttpRequest();
+        
+        request.open("GET", this.urlChangeMenu, true);
+        request.setRequestHeader("Conntent-Type", "application/json;charset=UTF-8");
+
+        request.onreadystatechange = function(){
+            if(request.readyState == 4){
+                if(request.status == 200)
+                {
+                    let pcStatus = request.responseText;
+                    let jsonStatus = JSON.parse(pcStatus);
+
+                    msgPacket = jsonStatus;
+
+                    cartOnload();
+                }
+                else{
+                    alert("擷取菜單失敗");
+                }
+            }
+        }
+
+        request.send(null, timeout=1.0);
+    }
 }
 
 toggleShowHide = function(e){
@@ -82,12 +115,7 @@ addCustomDish = function(e){
 
     json = new dish(target[0].value, parseInt(target[1].value), 1);
 
-    if(cart[json["NAME"]] == null){
-        cart[json["NAME"]] = json;
-    }
-    else{
-        cart[json["NAME"]]['COUNT'] = parseInt(cart[json[["NAME"]]]['COUNT']) + 1;
-    }
+    appendToMeals(json);
 
     cartOnload();
 }
@@ -96,13 +124,7 @@ addToCart = function(e){
 
     let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype);
     
-    if(cart[json["NAME"]] == null)
-        cart[json["NAME"]] = json;
-    else{
-        cart[json["NAME"]]['COUNT'] = parseInt(cart[json[["NAME"]]]['COUNT']) + 1;
-    }
-
-    //console.log(cart);
+    appendToMeals(json);
 }
 
 SetaddToCart = function(e){
@@ -113,12 +135,32 @@ SetaddToCart = function(e){
 
         let json = arr[i];
 
-        if(cart[json["NAME"]] == null)
-            cart[json["NAME"]] = json;
-        else{
-            cart[json["NAME"]]['COUNT'] = parseInt(cart[json[["NAME"]]]['COUNT']) + 1;
+        appendToMeals(arr[i]);
+    }
+}
+
+appendToMeals = function(Meal){
+    let met = false;
+    for(i = 0; i < msgPacket.Meals.length; i++){
+        if(msgPacket.Meals[i].NAME == Meal.NAME){
+            msgPacket.Meals[i].COUNT += 1;
+            met = true;
         }
     }
+
+    if(met == false){
+        msgPacket.Meals.push(Meal);
+    }
+}
+
+findMealInMeals = function(Meal){
+    
+    for(i = 0; i < msgPacket.Meals.length; i++){
+        if(msgPacket.Meals[i].NAME == Meal.NAME)
+            return msgPacket.Meals[i];
+    }
+
+    return null;
 }
 
 explicitAddSingle = function(){
@@ -165,7 +207,7 @@ explicitAddSingle = function(){
                     {
                         line = line.split('\ ');
                         
-                        let _dish = new dish(line[0], parseInt(line[1]), 1, line[2]);
+                        let _dish = new Meal(line[0], parseInt(line[1]), 1, line[2]);
                         templateCopySingles.push(_dish);
                         let tr = document.createElement("tr");
                         tr.setAttribute("data-jsontype", JSON.stringify(_dish));
@@ -175,8 +217,18 @@ explicitAddSingle = function(){
                         let td2 = document.createElement("td");
                         let btn = document.createElement("button");
                         
-                        td0.innerText = _dish.NAME;
-                        td1.innerText = _dish.PRICE;
+                        let lb0 = document.createElement("label");
+                        let lb1 = document.createElement("label");
+
+                        lb0.className = "tdLabel";
+                        lb1.className = "tdLabel";
+
+                        td0.appendChild(lb0);
+                        td1.appendChild(lb1);
+                        
+                        lb0.innerText = _dish.NAME;
+                        lb1.innerText = _dish.PRICE;
+
                         td2.appendChild(btn);
                         btn.innerText = "＋"
                         btn.addEventListener("click", addToCart);
@@ -227,16 +279,25 @@ explicitAddSet = function () {
                         }
 
                         line = line.substring(2).split('\ ');
-                        list.push(new dish(line[0], parseInt(line[1]), 1))
+                        list.push(new Meal(line[0], parseInt(line[1]), 1))
 
                         tbody = document.createElement("tbody");
                         let td0 = document.createElement("td");
                         let td1 = document.createElement("td");
                         let td2 = document.createElement("td");
                         let btn = document.createElement("button");
+
+                        let lb0 = document.createElement("label");
+                        let lb1 = document.createElement("label");
+
+                        lb0.className = "tdLabel";
+                        lb1.className = "tdLabel";
+
+                        lb0.innerText = line[0];
+                        lb1.innerText = line[1];
                         
-                        td0.innerText = line[0];
-                        td1.innerText = line[1];
+                        td0.appendChild(lb0);
+                        td1.appendChild(lb1);
                         td2.appendChild(btn);
                         btn.innerText = '＋';
                         btn.addEventListener("click", SetaddToCart);
@@ -258,7 +319,7 @@ explicitAddSet = function () {
                             }
                         }
 
-                        list.push(new dish(line, 0, 1, imgPath));
+                        list.push(new Meal(line, 0, 1, imgPath));
                     }
                 }
                 //少一次 要再放進去
@@ -274,13 +335,13 @@ explicitAddSet = function () {
 
 cartOnload = function(e){
     
-    const outerkeys = Object.keys(cart); //Get Json Keys
+    //const outerkeys = Object.keys(cart); //Get Json Keys
     document.querySelector("#Send_list").innerHTML = ''
 
     //Maybe can smarter
-    for(i = 0; i < outerkeys.length; i++){
+    for(i = 0; i < msgPacket.Meals.length; i++){
         subtree = document.createElement("tr");
-        const innerJson = cart[outerkeys[i]];
+        const innerJson = msgPacket.Meals[i];
         subtree.setAttribute("data-jsontype", JSON.stringify(innerJson));
         
         subtree.appendChild(document.createElement("td")); //品項
@@ -297,14 +358,19 @@ cartOnload = function(e){
         increment.innerText = "↑"
         increment.addEventListener("click",
             function(e) {
+                
                 let target = e.target.parentElement.parentElement;
-
                 let json = JSON.parse(target.dataset.jsontype);
+                
                 json.COUNT += 1;
 
+                console.log(json);
+                
                 target.childNodes[2].innerText = json.COUNT;
                 target.dataset.jsontype = JSON.stringify(json);
-                cart[json.NAME] = json;
+                
+                findMealInMeals(json).COUNT += 1;
+                //cart[json.NAME] = json;
 
                 let labe = document.querySelector("#priceLabel")
                 labe.dataset.price = parseInt(labe.dataset.price) + json.PRICE;
@@ -325,12 +391,14 @@ cartOnload = function(e){
 
                 if(json.COUNT <= 0){
                     tbody.removeChild(target);
-                    delete cart[json.NAME];
+                    msgPacket.Meals.pop(findMealInMeals(json));
+                    //delete cart[json.NAME];
                 }
                 else{
                     target.childNodes[2].innerText = json.COUNT;
                     target.dataset.jsontype = JSON.stringify(json);
-                    cart[json.NAME] = json;
+                    findMealInMeals(json).COUNT -= 1;
+                    //cart[json.NAME] = json;
                 }
                 
                 let labe = document.querySelector("#priceLabel")
@@ -357,7 +425,8 @@ cartOnload = function(e){
                 target.children[1].innerText = 0;
                 target.dataset.jsontype = JSON.stringify(json);
                 json.ATTRS.isModified = true;
-                cart[json.NAME] = json;
+                findMealInMeals(json).PRICE = 0;
+                //cart[json.NAME] = json;
         });
         subtree.children[5].appendChild(free);
 
@@ -369,7 +438,8 @@ cartOnload = function(e){
                 let json = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype);
                 let tbody = e.target.parentElement.parentElement.parentElement;
                 tbody.removeChild(e.target.parentElement.parentElement)
-                delete cart[json.NAME]
+                msgPacket.Meals.pop(findMealInMeals(json));
+                //delete cart[json.NAME]
                 priceChange(null);
         });
         subtree.children[6].appendChild(remove);
@@ -423,6 +493,7 @@ generate_Option = function(){
 }
 
 tableSelectChange = function(e){
+    msgPacket.TableNumber = e.target.selectedIndex + 1;
     console.log(e.target.selectedIndex);
 }
 
