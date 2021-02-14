@@ -113,7 +113,7 @@ addCustomDish = function(e){
     if(target[0].value == "菜名..") return;
     if(isNaN(parseInt(target[1].value))) target[1].value = 0;
 
-    json = new dish(target[0].value, parseInt(target[1].value), 1);
+    json = new Meal(target[0].value, parseInt(target[1].value), 1);
 
     appendToMeals(json);
 
