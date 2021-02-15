@@ -2,6 +2,7 @@ class MessagePacket{
     constructor(){
         this.TableNumber = 1;
         this.Meals = [];
+        this.PrintTwice = false; //remove this line after;
     }
 }
 
@@ -133,31 +134,29 @@ SetaddToCart = function(e){
     
     let arr = JSON.parse(e.target.parentElement.parentElement.dataset.jsontype); //Here is array
     
-    for(i = 0; i < arr.length; i++){
+    for(let i_inSetAddToCart = 0; i_inSetAddToCart < arr.length; i_inSetAddToCart++){
 
-        appendToMeals(arr[i]);
+        appendToMeals(arr[i_inSetAddToCart]);
     }
 }
 
 appendToMeals = function(Meal){
-    let met = false;
-    for(i = 0; i < msgPacket.Meals.length; i++){
-        if(msgPacket.Meals[i].NAME == Meal.NAME){
-            msgPacket.Meals[i].COUNT += 1;
-            met = true;
-        }
-    }
+    
+    const tar = findMealInMeals(Meal);
 
-    if(met == false){
+    if(tar == null){
         msgPacket.Meals.push(Meal);
+    }
+    else {
+        tar.COUNT += 1;
     }
 }
 
 findMealInMeals = function(Meal){
     
-    for(i = 0; i < msgPacket.Meals.length; i++){
-        if(msgPacket.Meals[i].NAME == Meal.NAME)
-            return msgPacket.Meals[i];
+    for(let i_infindMeal = 0; i_infindMeal < msgPacket.Meals.length; i_infindMeal++){
+        if(msgPacket.Meals[i_infindMeal].NAME == Meal.NAME)
+            return msgPacket.Meals[i_infindMeal];
     }
 
     return null;
